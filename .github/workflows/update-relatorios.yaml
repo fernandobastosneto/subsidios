@@ -24,6 +24,7 @@ jobs:
           remotes::install_dev("shiny")
           remotes::install_dev("golem")
           remotes::install_local(".")
+          tinytex::install_tinytex()
         shell: Rscript {0}
       - name: Execute Script
         run: |
