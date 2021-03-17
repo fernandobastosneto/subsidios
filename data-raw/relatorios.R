@@ -11,9 +11,9 @@ lista_paises <- unique(comerciobr::sh1_df$no_pais)
 lista_paises_filtrada <- lista_paises[! lista_paises %in% retirar_lista_paises]
 
 
-barao::relatorio_brasil_pais("China")
+# barao::relatorio_brasil_pais("China")
 
-# walk(lista_paises_filtrada[133:235], barao::relatorio_brasil_pais)
+walk(lista_paises_filtrada, barao::relatorio_brasil_pais)
 # 
 # # base de dados comtrade
 # 
@@ -46,11 +46,11 @@ retirar_lista_paises_comtrade <- c("Areas, nes", "Chad", "Cuba", "Dem. People's 
                                    "Czechoslovakia", "Bhutan", "Cook Isds", "Lao People's Dem. Rep.", "Dominica",
                                    "Guadeloupe", "French Guiana", "Fmr Dem. Yemen", "Martinique", "FS Micronesia", "Papua New Guinea",
                                    "Réunion", "Turks and Caicos Isds", "Vanuatu", "Venezuela", "US Virgin Isds")
-# 
+
 lista_paises_comtrade_filtrada <- lista_paises_comtrade %>% 
   dplyr::filter(! text %in% retirar_lista_paises_comtrade) %>% 
   dplyr::filter(stringr::str_detect(text, ", nes$", negate = T)) %>% 
   dplyr::pull(text)
 
-# purrr::walk(lista_paises_comtrade_filtrada, barao::relatorio_pais_mundo)
+purrr::walk(lista_paises_comtrade_filtrada, barao::relatorio_pais_mundo)
 
