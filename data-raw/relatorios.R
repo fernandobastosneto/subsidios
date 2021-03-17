@@ -50,7 +50,7 @@ retirar_lista_paises_comtrade <- c("Areas, nes", "Chad", "Cuba", "Dem. People's 
 lista_paises_comtrade_filtrada <- lista_paises_comtrade %>% 
   dplyr::filter(! text %in% retirar_lista_paises_comtrade) %>% 
   dplyr::filter(str_detect(text, ", nes$", negate = T)) %>% 
-  pull(text)
+  dplyr::pull(text)
 
 # purrr::walk(lista_paises_comtrade_filtrada, barao::relatorio_pais_mundo)
 
