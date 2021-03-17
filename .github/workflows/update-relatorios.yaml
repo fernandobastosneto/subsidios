@@ -10,50 +10,18 @@ name: update-relatorios
 jobs:
   update-data:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        r-version: ['4.0.3']
     steps:
       - uses: actions/checkout@v2
 
-      - name: Instalar R ${{ matrix.r-version }}
+      - name: Instalar R
         uses: r-lib/actions/setup-r@v1
-        with:
-          r-version: ${{ matrix.r-version }}
+      - uses: r-lib/actions/setup-pandoc@v1
 
-      - name: Cache R packages
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-shinydoc
-          restore-keys: |
-            ${{ runner.os }}-
-            
       - name: Instalar dependencias
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           install.packages("remotes")
-          remotes::install_github("fernandobastosneto/subsidios")
           remotes::install_local(".")
-          remotes::install_cran("dplyr")
-          remotes::install_cran("usethis")
-          remotes::install_cran("janitor")
-          remotes::install_cran("purrr")
-          remotes::install_cran("here")
-          remotes::install_cran("magrittr")
-          remotes::install_cran("fs")
-          remotes::install_cran("tibble")
-          remotes::install_cran("readxl")
-          remotes::install_cran("stringr")
-          remotes::install_github("Thinkr-open/golem")
-          remotes::install_cran("shiny")
-          remotes::install_cran("rsconnect")
-          remotes::install_cran("tinytex")
-          remotes::install_cran("rmarkdown")
-          remotes::install_cran("glue")
-          remotes::install_cran("wbstats")
-          remotes::install_cran("pkgload")
         shell: Rscript {0}
         
       - name: Execute Script
