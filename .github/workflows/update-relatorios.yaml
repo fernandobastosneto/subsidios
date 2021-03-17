@@ -35,11 +35,8 @@ jobs:
         run: |
           install.packages("remotes")
           remotes::install_local(".")
-          remotes::install_cran("tidyverse")
           remotes::install_cran("dplyr")
           remotes::install_cran("usethis")
-          remotes::install_cran("vroom")
-          remotes::install_cran("httr")
           remotes::install_cran("janitor")
           remotes::install_cran("purrr")
           remotes::install_cran("here")
@@ -48,6 +45,14 @@ jobs:
           remotes::install_cran("tibble")
           remotes::install_cran("readxl")
           remotes::install_cran("stringr")
+          remotes::install_cran("golem")
+          remotes::install_cran("shiny")
+          remotes::install_cran("rsconnect")
+          remotes::install_cran("tinytex")
+          remotes::install_cran("rmarkdown")
+          remotes::install_cran("glue")
+          remotes::install_cran("wbstats")
+          remotes::install_cran("pkgload")
         shell: Rscript {0}
         
       - name: Execute Script
