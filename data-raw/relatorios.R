@@ -10,7 +10,9 @@ retirar_lista_paises <- c("Não Definido", "Provisão de Navios e Aeronaves", "B
 lista_paises <- unique(comerciobr::sh1_df$no_pais)
 lista_paises_filtrada <- lista_paises[! lista_paises %in% retirar_lista_paises]
 
-purrr::walk(lista_paises_filtrada, barao::relatorio_brasil_pais)
+# purrr::walk(lista_paises_filtrada, barao::relatorio_brasil_pais)
+
+barao::relatorio_brasil_pais("China")
 
 # walk(lista_paises_filtrada[133:235], barao::relatorio_brasil_pais)
 # 
