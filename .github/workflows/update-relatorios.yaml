@@ -34,8 +34,8 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           install.packages("remotes")
-          remotes::install_local(".")
           remotes::install_github("fernandobastosneto/subsidios")
+          remotes::install_local(".")
           remotes::install_cran("dplyr")
           remotes::install_cran("usethis")
           remotes::install_cran("janitor")
@@ -46,7 +46,7 @@ jobs:
           remotes::install_cran("tibble")
           remotes::install_cran("readxl")
           remotes::install_cran("stringr")
-          remotes::install_cran("golem")
+          remotes::install_github("Thinkr-open/golem")
           remotes::install_cran("shiny")
           remotes::install_cran("rsconnect")
           remotes::install_cran("tinytex")
