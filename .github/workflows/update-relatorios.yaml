@@ -35,6 +35,7 @@ jobs:
         run: |
           install.packages("remotes")
           remotes::install_local(".")
+          remotes::install_github("fernandobastosneto/subsidios")
           remotes::install_cran("dplyr")
           remotes::install_cran("usethis")
           remotes::install_cran("janitor")
