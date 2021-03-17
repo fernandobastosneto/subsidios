@@ -19,11 +19,11 @@ output:
 
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, screenshot.force = TRUE)
-library(tidyverse)
-library(tinytex)
-library(wbstats)
-library(lubridate)
-library(ggthemes)
+# library(tidyverse)
+# library(tinytex)
+# library(wbstats)
+# library(lubridate)
+# library(ggthemes)
 
 
 
@@ -89,11 +89,11 @@ indicadores <- c(agricultura_gdp, comercio_gdp, crescimento_gdp,
 ##  ATENÇÃO - DEFINIÇÃO AQUI
 
 #df <- wb(country = "AND", indicator = indicadores, mrv = 10)
-df <- wb(country = filtro_bancomundial, indicator = indicadores, mrv = 10)
-df <- as_tibble(df)
+df <- wbstats::wb(country = filtro_bancomundial, indicator = indicadores, mrv = 10)
+df <- tibble::as_tibble(df)
 df <- df %>% 
   #mutate(date = as.numeric(date))
-  mutate(date = ymd(date, truncated = 2L)) 
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) 
 
 ```
 
@@ -102,36 +102,36 @@ df <- df %>%
 ```{r echo=FALSE, fig.show="hold", out.width="50%"}
 
 grafico_crescimento_pib <- df %>%
-  filter(indicatorID == "NY.GDP.MKTP.KD.ZG") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  mutate(valence = if_else(value >= 0, "pos", "neg")) %>%
-  ggplot(aes(x = date, y = value, fill = valence)) +
-  geom_col() +
-  geom_label(aes(label=round(value, 2)), color = "black", fill = "white", fontface = "bold") +
-  guides(fill = FALSE) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "NY.GDP.MKTP.KD.ZG") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  dplyr::mutate(valence = dplyr::if_else(value >= 0, "pos", "neg")) %>%
+  ggplot2::ggplot(ggplot2::aes(x = date, y = value, fill = valence)) +
+  ggplot2::geom_col() +
+  ggplot2::geom_label(ggplot2::aes(label=round(value, 2)), color = "black", fill = "white", fontface = "bold") +
+  ggplot2::guides(fill = FALSE) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Crescimento anual do PIB", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::labs(title = "Crescimento anual do PIB", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_crescimento_pib
 
 # gráfico de GDP current
 
 grafico_gdp_current <- df %>%
-  filter(indicatorID == "NY.GDP.MKTP.CD") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_area(aes(fill = country)) +
-  geom_line() +
-  geom_point() +
+  dplyr::filter(indicatorID == "NY.GDP.MKTP.CD") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_area(ggplot2::aes(fill = country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
   ggthemes::scale_fill_tableau() +
-  scale_y_continuous(labels = scales::dollar) +
-  scale_x_date(date_labels = "%Y") +
-  labs(title = "PIB a preços correntes (em USD)", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::scale_y_continuous(labels = scales::dollar) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
+  ggplot2::labs(title = "PIB a preços correntes (em USD)", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_gdp_current
 
@@ -146,36 +146,36 @@ grafico_gdp_current
 # gráfico de GDP per capita
 
 grafico_gdp_capita <- df %>% 
-  filter(indicatorID == "NY.GDP.PCAP.PP.CD") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_area(aes(fill = country)) +
-  geom_line() +
-  geom_point() +
+  dplyr::filter(indicatorID == "NY.GDP.PCAP.PP.CD") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_area(ggplot2::aes(fill = country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
   ggthemes::scale_fill_tableau() +
-  scale_y_continuous(labels = scales::dollar) +
-  scale_x_date(date_labels = "%Y") +
-  labs(title = "PIB per Capita", caption= "Fonte: International Comparison Program, World Bank") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::scale_y_continuous(labels = scales::dollar) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
+  ggplot2::labs(title = "PIB per Capita", caption= "Fonte: International Comparison Program, World Bank") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_gdp_capita
 
 #gráfico de GDP ppp
 
 grafico_gdp_ppp <- df %>% 
-  filter(indicatorID == "NY.GDP.MKTP.PP.CD") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_area(aes(fill =  country)) +
-  geom_line() +
-  geom_point() +
+  dplyr::filter(indicatorID == "NY.GDP.MKTP.PP.CD") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_area(ggplot2::aes(fill =  country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
   ggthemes::scale_fill_tableau() +
-  scale_y_continuous(labels = scales::dollar) +
-  scale_x_date(date_labels = "%Y") +
-  labs(title = "PIB por Paridade de Poder de Compra", caption = "Fonte: International Comparison Program, World Bank") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::scale_y_continuous(labels = scales::dollar) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
+  ggplot2::labs(title = "PIB por Paridade de Poder de Compra", caption = "Fonte: International Comparison Program, World Bank") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_gdp_ppp
 
@@ -203,23 +203,23 @@ indicator_factor <- function(x) {
 #TODO arrumar esse fragmento
 
 df_gdp <- df %>% 
-  mutate(indicator = indicator_factor(indicator))
+  dplyr::mutate(indicator = indicator_factor(indicator))
 
 grafico_gdp_proporcao <- df_gdp %>% 
-  filter(indicatorID %in% indicadores_gdp) %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(x = date, y = value, color = indicator)) +
-  facet_wrap(~indicator, nrow = 2, labeller = labeller(indicator = rename_indicadores_gdp_proporcao)) +
+  dplyr::filter(indicatorID %in% indicadores_gdp) %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(x = date, y = value, color = indicator)) +
+  ggplot2::facet_wrap(~indicator, nrow = 2, labeller = ggplot2::labeller(indicator = rename_indicadores_gdp_proporcao)) +
 #  geom_area(group = 1) +
-  geom_line() +
-  geom_point(size=0.5) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point(size=0.5) +
 #  geom_label(aes(label = round(value, 2), nudge_x = 0.5)) +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_x_date(date_labels = "%Y", guide = guide_axis(n.dodge = 2)) +
+  ggplot2::scale_y_continuous(limits = c(0, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y", guide = ggplot2::guide_axis(n.dodge = 2)) +
   ggthemes::scale_fill_tableau() +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank()) +
-  labs(Title = "Composição do PIB", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files")
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank()) +
+  ggplot2::labs(Title = "Composição do PIB", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files")
 
 grafico_gdp_proporcao
 
@@ -232,34 +232,34 @@ grafico_gdp_proporcao
 #gráfico de desemprego
 
 grafico_desemprego <- df %>% 
-  filter(indicatorID == "SL.UEM.TOTL.NE.ZS") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "SL.UEM.TOTL.NE.ZS") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous(limits = c(0, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Desemprego", caption = "Fonte: International Labour Organization, ILOSTAT database") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::labs(title = "Desemprego", caption = "Fonte: International Labour Organization, ILOSTAT database") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_desemprego  
 
 #gráfico de inflação
 #TODO arrumar eixo x com as datas
 grafico_inflacao <- df %>%
-  filter(indicatorID == "FP.CPI.TOTL.ZG") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
+  dplyr::filter(indicatorID == "FP.CPI.TOTL.ZG") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
   ggthemes::scale_fill_tableau() +
-  scale_y_continuous(limits = c(NA, NA)) +
-  scale_x_date(date_labels = "%Y") +
-  labs(title= "Inflação", caption="International Monetary Fund, International Financial Statistics and data files.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::scale_y_continuous(limits = c(NA, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
+  ggplot2::labs(title= "Inflação", caption="International Monetary Fund, International Financial Statistics and data files.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_inflacao
 
@@ -271,34 +271,34 @@ grafico_inflacao
 # gráfico de formação bruta de capital fixo
 
 grafico_fbk <- df %>%
-  filter(indicatorID == "NE.GDI.FTOT.ZS") %>% 
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
+  dplyr::filter(indicatorID == "NE.GDI.FTOT.ZS") %>% 
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
   ggthemes::scale_fill_tableau() +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_x_date(date_labels = "%Y") +
-  labs(title = "Formação Bruta de Capital Fixo", caption = "World Bank national accounts data, and OECD National Accounts data files") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::scale_y_continuous(limits = c(0, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
+  ggplot2::labs(title = "Formação Bruta de Capital Fixo", caption = "World Bank national accounts data, and OECD National Accounts data files") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_fbk
 
 #Gráfico de poupança interna
 
 grafico_poupanca_interna <- df %>%
-  filter(indicatorID == "NY.GNS.ICTR.ZS") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "NY.GNS.ICTR.ZS") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous(limits = c(0, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Poupança Interna", caption = "World Bank national accounts data, and OECD National Accounts data files.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-          axis.title.y = element_blank())
+  ggplot2::labs(title = "Poupança Interna", caption = "World Bank national accounts data, and OECD National Accounts data files.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank())
 
 grafico_poupanca_interna
 
@@ -308,32 +308,32 @@ grafico_poupanca_interna
 
 ```{r, echo = FALSE, fig.show="hold", out.width="50%"}
 grafico_fdi_inflows_gdp <- df %>% 
-  filter(indicatorID == "BX.KLT.DINV.WD.GD.ZS") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "BX.KLT.DINV.WD.GD.ZS") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous(limits = c(0, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Entrada Líquida de Investimento Direto (% do PIB)", caption = "Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-          axis.title.y = element_blank())
+  ggplot2::labs(title = "Entrada Líquida de Investimento Direto (% do PIB)", caption = "Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank())
 
 grafico_fdi_inflows_gdp
 
 grafico_fdi_inflows_dolar <- df %>% 
-  filter(indicatorID == "BX.KLT.DINV.CD.WD") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
-  scale_y_continuous(limits = c(0, NA), labels = scales::dollar) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "BX.KLT.DINV.CD.WD") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous(limits = c(0, NA), labels = scales::dollar) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Entrada Líquida de Investimento Direto (US$)", caption = "Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-          axis.title.y = element_blank())
+  ggplot2::labs(title = "Entrada Líquida de Investimento Direto (US$)", caption = "Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank())
 
 grafico_fdi_inflows_dolar
 
@@ -344,32 +344,32 @@ grafico_fdi_inflows_dolar
 ```{r, echo = FALSE, fig.show="hold", out.width="50%"}
 
 grafico_fdi_outflows_gdp <- df %>%
-  filter(indicatorID == "BM.KLT.DINV.WD.GD.ZS") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "BM.KLT.DINV.WD.GD.ZS") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous(limits = c(0, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Saída Líquida de Investimento Direto (% do PIB)", caption = " Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-          axis.title.y = element_blank())
+  ggplot2::labs(title = "Saída Líquida de Investimento Direto (% do PIB)", caption = " Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank())
 
 grafico_fdi_outflows_gdp
 
 grafico_fdi_outflows_dolar <- df %>%
-  filter(indicatorID == "BM.KLT.DINV.CD.WD") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_line(aes(color = country)) +
-  geom_point() +
-  scale_y_continuous(limits = c(0, NA), labels = scales::dollar) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "BM.KLT.DINV.CD.WD") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_line(ggplot2::aes(color = country)) +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous(limits = c(0, NA), labels = scales::dollar) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Saída Líquida de Investimento Direto (US$)", caption = " Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-          axis.title.y = element_blank())
+  ggplot2::labs(title = "Saída Líquida de Investimento Direto (US$)", caption = " Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank())
 
 grafico_fdi_outflows_dolar
 
@@ -382,47 +382,47 @@ grafico_fdi_outflows_dolar
 ```{r, echo = FALSE, fig.show= "hold", out.width="50%"}
 
 graf_area <- df %>%
-  filter(indicatorID == "BN.CAB.XOKA.GD.ZS") %>% 
-  mutate(valence = if_else(value >= 0, "pos", "neg")) %>% 
-  mutate(date = year(date))
+  dplyr::filter(indicatorID == "BN.CAB.XOKA.GD.ZS") %>% 
+  dplyr::mutate(valence = dplyr::if_else(value >= 0, "pos", "neg")) %>% 
+  dplyr::mutate(date = lubridate::year(date))
 
 flame_graf <- function(x) {
   if (nrow(graf_area) > 0) {
-    interp <- approx(x$date, x$value, n = 1000)
+    interp <- stats::approx(x$date, x$value, n = 1000)
     cbi <- data.frame(date = interp$x, value = interp$y) %>%
-    mutate(valence = if_else(value >= 0, "pos", "neg"))
-    ggplot(cbi, aes(date, value)) +
-    geom_area(aes(fill = valence)) +
-    geom_line() +
-    geom_hline(yintercept = 0) +
-    scale_fill_manual(values = c("#E15759","#4E79A7"), guide = FALSE) +
-    labs(title = "Saldo em Transações Correntes", caption = "International Monetary, World Bank and OECD GDP estimates") +
-    theme(legend.position = "none", axis.title.x = element_blank(),
-          axis.title.y = element_blank())
+    dplyr::mutate(valence = dplyr::if_else(value >= 0, "pos", "neg"))
+    ggplot2::ggplot(cbi, ggplot2::aes(date, value)) +
+    ggplot2::geom_area(ggplot2::aes(fill = valence)) +
+    ggplot2::geom_line() +
+    ggplot2::geom_hline(yintercept = 0) +
+    ggplot2::scale_fill_manual(values = c("#E15759","#4E79A7"), guide = FALSE) +
+    ggplot2::labs(title = "Saldo em Transações Correntes", caption = "International Monetary, World Bank and OECD GDP estimates") +
+    ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank())
   } else {
     graf_area %>% 
-      ggplot() +
-      labs(title = "Saldo em Transações Correntes", caption = "International Monetary, World Bank and OECD GDP estimates") +
-    theme(legend.position = "none", axis.title.x = element_blank(),
-          axis.title.y = element_blank())
+      ggplot2::ggplot() +
+      ggplot2::labs(title = "Saldo em Transações Correntes", caption = "International Monetary, World Bank and OECD GDP estimates") +
+    ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank())
   }
 }
 
 flame_graf(graf_area)
 
 grafico_reservas_gdp <- df %>% 
-  filter(indicatorID == "FI.RES.TOTL.DT.ZS") %>% 
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(x = date, y = value)) +
-  geom_area(aes(fill = country)) +
-  geom_line() +
-  geom_point() +
-  scale_y_continuous(limits = c(0, NA)) +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "FI.RES.TOTL.DT.ZS") %>% 
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(x = date, y = value)) +
+  ggplot2::geom_area(ggplot2::aes(fill = country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous(limits = c(0, NA)) +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Reservas (% do PIB)", caption = "Fonte: World Bank, International Debt Statistics.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::labs(title = "Reservas (% do PIB)", caption = "Fonte: World Bank, International Debt Statistics.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 # International reserves to total external debt stocks.
 
@@ -432,34 +432,34 @@ grafico_reservas_gdp
 
 ```{r, echo = FALSE, fg.show = "hold", out.width="50%"}
 grafico_divida_externa_renda_nacional <- df %>% 
-  filter(indicatorID == "DT.DOD.DECT.GN.ZS") %>% 
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_area(aes(fill = country)) +
-  geom_line() +
-  geom_point() +
-  scale_y_continuous() +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "DT.DOD.DECT.GN.ZS") %>% 
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_area(ggplot2::aes(fill = country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous() +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Proporção da Dívida Externa pela Renda Nacional", caption = "World Bank, International Debt Statistics.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::labs(title = "Proporção da Dívida Externa pela Renda Nacional", caption = "World Bank, International Debt Statistics.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_divida_externa_renda_nacional
   
 grafico_divida_governo_gdp <- df %>%
-  filter(indicatorID == "GC.DOD.TOTL.GD.ZS") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_area(aes(fill = country)) +
-  geom_line() +
-  geom_point() +
-  scale_y_continuous() +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "GC.DOD.TOTL.GD.ZS") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_area(ggplot2::aes(fill = country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous() +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Dívida do Governo (% do PIB)", caption = "International Monetary Fund, World Bank and OECD GDP estimates") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank()) 
+  ggplot2::labs(title = "Dívida do Governo (% do PIB)", caption = "International Monetary Fund, World Bank and OECD GDP estimates") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank()) 
 
 grafico_divida_governo_gdp
   
@@ -469,18 +469,18 @@ grafico_divida_governo_gdp
 ```{r, echo = FALSE, fig.show="hold", out.width="50%"}
 
 grafico_divida_curto_prazo_por_reservas <- df %>% 
-  filter(indicatorID == "DT.DOD.DSTC.IR.ZS") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_area(aes(fill = country)) +
-  geom_line() +
-  geom_point() +
-  scale_y_continuous() +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "DT.DOD.DSTC.IR.ZS") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_area(ggplot2::aes(fill = country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous() +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Dívida de Curto Prazo (% das reservas)", caption = "World Bank, International Debt Statistics.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::labs(title = "Dívida de Curto Prazo (% das reservas)", caption = "World Bank, International Debt Statistics.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_divida_curto_prazo_por_reservas
 
@@ -489,18 +489,18 @@ grafico_divida_curto_prazo_por_reservas
 #grafico_divida_curto_prazo_por_reservas
 
 grafico_servico_divida <- df %>% 
-  filter(indicatorID == "DT.TDS.DECT.EX.ZS") %>%
-  mutate(date = ymd(date, truncated = 2L)) %>% 
-  ggplot(aes(date, value)) +
-  geom_area(aes(fill = country)) +
-  geom_line() +
-  geom_point() +
-  scale_y_continuous() +
-  scale_x_date(date_labels = "%Y") +
+  dplyr::filter(indicatorID == "DT.TDS.DECT.EX.ZS") %>%
+  dplyr::mutate(date = lubridate::ymd(date, truncated = 2L)) %>% 
+  ggplot2::ggplot(ggplot2::aes(date, value)) +
+  ggplot2::geom_area(ggplot2::aes(fill = country)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
+  ggplot2::scale_y_continuous() +
+  ggplot2::scale_x_date(date_labels = "%Y") +
   ggthemes::scale_fill_tableau() +
-  labs(title = "Serviço da Dívida (% das exportações e renda primária)", caption = "World Bank, International Debt Statistics.") +
-  theme(legend.position = "none", axis.title.x = element_blank(),
-        axis.title.y = element_blank())
+  ggplot2::labs(title = "Serviço da Dívida (% das exportações e renda primária)", caption = "World Bank, International Debt Statistics.") +
+  ggplot2::theme(legend.position = "none", axis.title.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank())
 
 grafico_servico_divida
 

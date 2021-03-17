@@ -11,7 +11,7 @@ library(barao)
 # comtrade_files <- list.files(here("output", "Comtrade"))
 mdic_files <- fs::dir_ls(here::here("data", "relatorios_comerciobr")) %>%
   stringr::str_remove(paste0(here::here("data", "relatorios_comerciobr/"), "comerciobr_")) %>%
-  stringr::str_remove("_\\d{4}_.*")
+  stringr::str_remove(".pdf$")
 paises_bancomundial <- readr::read_csv2(here::here("data/Paises_BancoMundial.csv"))
 
 relatorio_bancomundial <- function(pais) {
