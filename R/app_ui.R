@@ -12,6 +12,15 @@ library(barao)
 mdic_files <- fs::dir_ls(here::here("data", "relatorios_comerciobr")) %>%
   stringr::str_remove(paste0(here::here("data", "relatorios_comerciobr/"), "comerciobr_")) %>%
   stringr::str_remove("_\\d{4}_.*")
+paises_bc <- readr::read_csv2(here::here("data/Paises_BancoMundial.csv"))
+
+relatorio_bancomundial <- function(pais) {
+  paises_bcfiltrado <- paises_bc %>% 
+    dplyr::filter(NO_PAIS == pais)
+  filtro <- paises_bcfiltrado$NO_PAIS
+  filtro_bancomundial <- paises_bcfiltrado$CO_PAIS_ISOA3
+  rmarkdown::render(here::here("inst/rmd", "notebook_bancomundial.Rmd"))
+}
 
 app_ui <- function(request) {
   tagList(
@@ -38,12 +47,12 @@ app_ui <- function(request) {
                  # fluidRow(
                  #   column(2, wellPanel(selectInput("comtrade", "País-Mundo", str_remove(comtrade_files, ".pdf")), 
                  #                       downloadButton("comtrade_report", "Download"), align = "left")))
+        ),
+        tabPanel("Dados Econômicos",
+                 fluidRow(
+                   column(2, wellPanel(selectInput("dataset3", "Escolha um país", paises$NO_PAIS),
+                                       downloadButton("report3", "Download"), align = "left")))
         )
-        # tabPanel("Dados Econômicos",
-        #          fluidRow(
-        #            column(2, wellPanel(selectInput("dataset3", "Escolha um país", paises$NO_PAIS),
-        #                                downloadButton("report3", "Download"), align = "left")))
-        # )
       )
     )
   )

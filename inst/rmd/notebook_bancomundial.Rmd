@@ -1,0 +1,560 @@
+---
+title: "`r filtro`, Indicadores Econômicos Internos"
+author: "Divisão de Promoção da Indústria"
+organization: "Ministério das Relações Exteriores"
+date: "`r format(Sys.time(), '%B %Y')`"
+header-includes:
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhead{}
+- \fancyhead[CO,CE]{`r filtro`, Indicadores Econômicos Internos}
+- \fancyfoot[CO,CE]{Divisão de Promoção da Indústria, Ministério das Relações Exteriores}
+- \fancyfoot[LE,RO]{\thepage}
+output:
+  pdf_document:
+    toc: true
+    # template: template.tex
+ 
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, screenshot.force = TRUE)
+library(tidyverse)
+library(tinytex)
+library(wbstats)
+library(lubridate)
+library(ggthemes)
+
+
+
+# TODO adicionar algum disclaimer quando não houver dados disponíveis
+
+#indicadores proporcionais ao PIB
+
+agricultura_gdp <- "NV.AGR.TOTL.ZS"
+servicos_gdp <- "NV.SRV.TOTL.ZS"
+industria_gdp <- "NV.IND.TOTL.ZS"
+manufaturas_gdp <- "NV.IND.MANF.ZS"
+comercio_gdp <- "NE.TRD.GNFS.ZS"
+exportacoes_gdp <- "NE.EXP.GNFS.ZS"
+gasto_governo_gdp <- "NE.CON.GOVT.ZS" 
+importacoes_gdp <- "NE.IMP.GNFS.ZS"
+
+indicadores_gdp <- c(agricultura_gdp, servicos_gdp, industria_gdp, 
+                     manufaturas_gdp, comercio_gdp, exportacoes_gdp, 
+                     gasto_governo_gdp, importacoes_gdp)
+
+#indicadores de desenvolvimento
+
+crescimento_gdp <- "NY.GDP.MKTP.KD.ZG"
+desemprego <- "SL.UEM.TOTL.NE.ZS"
+formacao_bruta_capital <- "NE.GDI.FTOT.ZS"
+gdp_current <- "NY.GDP.MKTP.CD"
+gdp_percapita_ppp <- "NY.GDP.PCAP.PP.CD"
+gdp_ppp <- "NY.GDP.MKTP.PP.CD"
+gini <- "SI.POV.GINI"
+inflacao <- "FP.CPI.TOTL.ZG"
+
+indicadores_desenvolvimento <- c(crescimento_gdp, desemprego, formacao_bruta_capital,
+                                 gdp_current, gdp_percapita_ppp, gdp_ppp, gini,
+                                 inflacao)
+
+#indicadores financeiros
+
+fdi_inflows_gdp <- "BX.KLT.DINV.WD.GD.ZS"
+fdi_inflows_dolar <- "BX.KLT.DINV.CD.WD"
+fdi_outflows_gdp <- "BM.KLT.DINV.WD.GD.ZS"
+fdi_outflows_dolar <- " BM.KLT.DINV.CD.WD"
+divida_externa_renda_nacional <- "DT.DOD.DECT.GN.ZS"
+divida_governo_gdp <- "GC.DOD.TOTL.GD.ZS"
+servico_divida <- "DT.TDS.DECT.EX.ZS"
+saldo_transacoes_correntes <- "BN.CAB.XOKA.GD.ZS"
+poupanca_interna <- "NY.GNS.ICTR.ZS"
+reservas_gdp <- "FI.RES.TOTL.DT.ZS"
+taxa_juros_real <- "FR.INR.RINR"
+divida_curto_prazo_por_reservas <- "DT.DOD.DSTC.IR.ZS"
+
+
+indicadores <- c(agricultura_gdp, comercio_gdp, crescimento_gdp, 
+                 desemprego, divida_externa_renda_nacional, divida_governo_gdp,
+                 servico_divida, fdi_inflows_dolar,
+                 exportacoes_gdp, fdi_inflows_gdp, fdi_outflows_gdp, fdi_outflows_dolar,
+                 formacao_bruta_capital, gasto_governo_gdp, importacoes_gdp, 
+                 gdp_current, gdp_percapita_ppp, gdp_ppp, 
+                 gini, industria_gdp, inflacao, 
+                 manufaturas_gdp, poupanca_interna, reservas_gdp, 
+                 saldo_transacoes_correntes, servicos_gdp, taxa_juros_real,
+                 divida_curto_prazo_por_reservas)
+
+##  ATENÇÃO - DEFINIÇÃO AQUI
+
+#df <- wb(country = "AND", indicator = indicadores, mrv = 10)
+df <- wb(country = filtro_bancomundial, indicator = indicadores, mrv = 10)
+df <- as_tibble(df)
+df <- df %>% 
+  #mutate(date = as.numeric(date))
+  mutate(date = ymd(date, truncated = 2L)) 
+
+```
+
+### Produto Interno Bruto
+
+```{r echo=FALSE, fig.show="hold", out.width="50%"}
+
+grafico_crescimento_pib <- df %>%
+  filter(indicatorID == "NY.GDP.MKTP.KD.ZG") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  mutate(valence = if_else(value >= 0, "pos", "neg")) %>%
+  ggplot(aes(x = date, y = value, fill = valence)) +
+  geom_col() +
+  geom_label(aes(label=round(value, 2)), color = "black", fill = "white", fontface = "bold") +
+  guides(fill = FALSE) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Crescimento anual do PIB", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_crescimento_pib
+
+# gráfico de GDP current
+
+grafico_gdp_current <- df %>%
+  filter(indicatorID == "NY.GDP.MKTP.CD") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_area(aes(fill = country)) +
+  geom_line() +
+  geom_point() +
+  ggthemes::scale_fill_tableau() +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_x_date(date_labels = "%Y") +
+  labs(title = "PIB a preços correntes (em USD)", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_gdp_current
+
+```
+
+```{r echo=FALSE, fig.show="hold", out.width="50%"}
+
+# TODO colocar título nos gráficos
+# TODO retirar labels
+# TODO retirar os nomes dos eixos X e Y
+
+# gráfico de GDP per capita
+
+grafico_gdp_capita <- df %>% 
+  filter(indicatorID == "NY.GDP.PCAP.PP.CD") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_area(aes(fill = country)) +
+  geom_line() +
+  geom_point() +
+  ggthemes::scale_fill_tableau() +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_x_date(date_labels = "%Y") +
+  labs(title = "PIB per Capita", caption= "Fonte: International Comparison Program, World Bank") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_gdp_capita
+
+#gráfico de GDP ppp
+
+grafico_gdp_ppp <- df %>% 
+  filter(indicatorID == "NY.GDP.MKTP.PP.CD") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_area(aes(fill =  country)) +
+  geom_line() +
+  geom_point() +
+  ggthemes::scale_fill_tableau() +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_x_date(date_labels = "%Y") +
+  labs(title = "PIB por Paridade de Poder de Compra", caption = "Fonte: International Comparison Program, World Bank") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_gdp_ppp
+
+
+```
+
+## Estrutura da Economia em Proporção do PIB 
+
+```{r echo=FALSE, fig.align="center"}
+#knitr::opts_chunk$set(comment=NA, fig.width=6, fig.height=6)
+
+rename_indicadores_gdp_proporcao <- c("Agriculture, forestry, and fishing, value added (% of GDP)" = "Agricultura",
+                                      "Trade (% of GDP)" = "Comércio", 
+                                      "Exports of goods and services (% of GDP)" = "Exportações",
+                                      "Imports of goods and services (% of GDP)" = "Importações",
+                                      "Industry (including construction), value added (% of GDP)" = "Indústria",
+                                      "Manufacturing, value added (% of GDP)" = "Ind. de Transformação",
+                                      "Services, value added (% of GDP)" = "Serviços",
+                                      "General government final consumption expenditure (% of GDP)" = "Gastos do Governo") 
+
+indicator_factor <- function(x) {
+  factor(x, c("Agriculture, forestry, and fishing, value added (% of GDP)", "Industry (including construction), value added (% of GDP)", "Manufacturing, value added (% of GDP)", "Services, value added (% of GDP)", "General government final consumption expenditure (% of GDP)", "Imports of goods and services (% of GDP)", "Exports of goods and services (% of GDP)", "Trade (% of GDP)"))
+}
+
+#TODO arrumar esse fragmento
+
+df_gdp <- df %>% 
+  mutate(indicator = indicator_factor(indicator))
+
+grafico_gdp_proporcao <- df_gdp %>% 
+  filter(indicatorID %in% indicadores_gdp) %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(x = date, y = value, color = indicator)) +
+  facet_wrap(~indicator, nrow = 2, labeller = labeller(indicator = rename_indicadores_gdp_proporcao)) +
+#  geom_area(group = 1) +
+  geom_line() +
+  geom_point(size=0.5) +
+#  geom_label(aes(label = round(value, 2), nudge_x = 0.5)) +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_x_date(date_labels = "%Y", guide = guide_axis(n.dodge = 2)) +
+  ggthemes::scale_fill_tableau() +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank()) +
+  labs(Title = "Composição do PIB", caption = "Fonte: World Bank national accounts data, and OECD National Accounts data files")
+
+grafico_gdp_proporcao
+
+```
+
+## Indicadores de Inflação e Desemprego
+
+```{r, echo = FALSE, fig.show="hold", out.width="50%"}
+
+#gráfico de desemprego
+
+grafico_desemprego <- df %>% 
+  filter(indicatorID == "SL.UEM.TOTL.NE.ZS") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Desemprego", caption = "Fonte: International Labour Organization, ILOSTAT database") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_desemprego  
+
+#gráfico de inflação
+#TODO arrumar eixo x com as datas
+grafico_inflacao <- df %>%
+  filter(indicatorID == "FP.CPI.TOTL.ZG") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  ggthemes::scale_fill_tableau() +
+  scale_y_continuous(limits = c(NA, NA)) +
+  scale_x_date(date_labels = "%Y") +
+  labs(title= "Inflação", caption="International Monetary Fund, International Financial Statistics and data files.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_inflacao
+
+```
+
+## Indicadores de Investimento
+
+```{r, echo = FALSE, fig.show = "hold", out.width="50%"}
+# gráfico de formação bruta de capital fixo
+
+grafico_fbk <- df %>%
+  filter(indicatorID == "NE.GDI.FTOT.ZS") %>% 
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  ggthemes::scale_fill_tableau() +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_x_date(date_labels = "%Y") +
+  labs(title = "Formação Bruta de Capital Fixo", caption = "World Bank national accounts data, and OECD National Accounts data files") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_fbk
+
+#Gráfico de poupança interna
+
+grafico_poupanca_interna <- df %>%
+  filter(indicatorID == "NY.GNS.ICTR.ZS") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Poupança Interna", caption = "World Bank national accounts data, and OECD National Accounts data files.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+
+grafico_poupanca_interna
+
+```
+
+## Fluxo de Investimentos
+
+```{r, echo = FALSE, fig.show="hold", out.width="50%"}
+grafico_fdi_inflows_gdp <- df %>% 
+  filter(indicatorID == "BX.KLT.DINV.WD.GD.ZS") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Entrada Líquida de Investimento Direto (% do PIB)", caption = "Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+
+grafico_fdi_inflows_gdp
+
+grafico_fdi_inflows_dolar <- df %>% 
+  filter(indicatorID == "BX.KLT.DINV.CD.WD") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA), labels = scales::dollar) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Entrada Líquida de Investimento Direto (US$)", caption = "Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+
+grafico_fdi_inflows_dolar
+
+
+```
+
+
+```{r, echo = FALSE, fig.show="hold", out.width="50%"}
+
+grafico_fdi_outflows_gdp <- df %>%
+  filter(indicatorID == "BM.KLT.DINV.WD.GD.ZS") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Saída Líquida de Investimento Direto (% do PIB)", caption = " Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+
+grafico_fdi_outflows_gdp
+
+grafico_fdi_outflows_dolar <- df %>%
+  filter(indicatorID == "BM.KLT.DINV.CD.WD") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_line(aes(color = country)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA), labels = scales::dollar) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Saída Líquida de Investimento Direto (US$)", caption = " Fonte: International Monetary Fund, International Financial Statistics and World Bank and OECD GDP estimates.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+
+grafico_fdi_outflows_dolar
+
+```
+
+
+
+## Indicadores de Solvência Externa
+
+```{r, echo = FALSE, fig.show= "hold", out.width="50%"}
+
+graf_area <- df %>%
+  filter(indicatorID == "BN.CAB.XOKA.GD.ZS") %>% 
+  mutate(valence = if_else(value >= 0, "pos", "neg")) %>% 
+  mutate(date = year(date))
+
+flame_graf <- function(x) {
+  if (nrow(graf_area) > 0) {
+    interp <- approx(x$date, x$value, n = 1000)
+    cbi <- data.frame(date = interp$x, value = interp$y) %>%
+    mutate(valence = if_else(value >= 0, "pos", "neg"))
+    ggplot(cbi, aes(date, value)) +
+    geom_area(aes(fill = valence)) +
+    geom_line() +
+    geom_hline(yintercept = 0) +
+    scale_fill_manual(values = c("#E15759","#4E79A7"), guide = FALSE) +
+    labs(title = "Saldo em Transações Correntes", caption = "International Monetary, World Bank and OECD GDP estimates") +
+    theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+  } else {
+    graf_area %>% 
+      ggplot() +
+      labs(title = "Saldo em Transações Correntes", caption = "International Monetary, World Bank and OECD GDP estimates") +
+    theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+  }
+}
+
+flame_graf(graf_area)
+
+grafico_reservas_gdp <- df %>% 
+  filter(indicatorID == "FI.RES.TOTL.DT.ZS") %>% 
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(x = date, y = value)) +
+  geom_area(aes(fill = country)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(limits = c(0, NA)) +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Reservas (% do PIB)", caption = "Fonte: World Bank, International Debt Statistics.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+# International reserves to total external debt stocks.
+
+grafico_reservas_gdp
+
+```
+
+```{r, echo = FALSE, fg.show = "hold", out.width="50%"}
+grafico_divida_externa_renda_nacional <- df %>% 
+  filter(indicatorID == "DT.DOD.DECT.GN.ZS") %>% 
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_area(aes(fill = country)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous() +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Proporção da Dívida Externa pela Renda Nacional", caption = "World Bank, International Debt Statistics.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_divida_externa_renda_nacional
+  
+grafico_divida_governo_gdp <- df %>%
+  filter(indicatorID == "GC.DOD.TOTL.GD.ZS") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_area(aes(fill = country)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous() +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Dívida do Governo (% do PIB)", caption = "International Monetary Fund, World Bank and OECD GDP estimates") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank()) 
+
+grafico_divida_governo_gdp
+  
+
+```
+
+```{r, echo = FALSE, fig.show="hold", out.width="50%"}
+
+grafico_divida_curto_prazo_por_reservas <- df %>% 
+  filter(indicatorID == "DT.DOD.DSTC.IR.ZS") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_area(aes(fill = country)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous() +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Dívida de Curto Prazo (% das reservas)", caption = "World Bank, International Debt Statistics.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_divida_curto_prazo_por_reservas
+
+#Short-term debt includes all debt having an original maturity of one year or less and interest in arrears on long-term debt. Total reserves includes gold.
+# Arrumar este erro em que faltam dados;
+#grafico_divida_curto_prazo_por_reservas
+
+grafico_servico_divida <- df %>% 
+  filter(indicatorID == "DT.TDS.DECT.EX.ZS") %>%
+  mutate(date = ymd(date, truncated = 2L)) %>% 
+  ggplot(aes(date, value)) +
+  geom_area(aes(fill = country)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous() +
+  scale_x_date(date_labels = "%Y") +
+  ggthemes::scale_fill_tableau() +
+  labs(title = "Serviço da Dívida (% das exportações e renda primária)", caption = "World Bank, International Debt Statistics.") +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+grafico_servico_divida
+
+
+```
+
+## Definições dos Indicadores
+
+**Crescimento Anual do PIB**: Annual percentage growth rate of GDP at market prices based on constant local currency. Aggregates are based on constant 2010 U.S. dollars. GDP is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products. It is calculated without making deductions for depreciation of fabricated assets or for depletion and degradation of natural resources.
+
+**PIB a Preços Correntes**: GDP at purchaser's prices is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products. Dollar figures for GDP are converted from domestic currencies using single year official exchange rates.
+
+**PIB per Capita**: This indicator provides per capita values for gross domestic product (GDP) expressed in current international dollars converted by purchasing power parity (PPP) conversion factor. GDP is the sum of gross value added by all resident producers in the country plus any product taxes and minus any subsidies not included in the value of the products. conversion factor is a spatial price deflator and currency converter that controls for price level differences between countries. Total population is a mid-year population based on the de facto definition of population, which counts all residents regardless of legal status or citizenship. 
+
+**PIB Paridade Poder de Compra**: This indicator provides values for gross domestic product (GDP) expressed in current international dollars, converted by purchasing power parity (PPP) conversion factor. GDP is the sum of gross value added by all resident producers in the country plus any product taxes and minus any subsidies not included in the value of the products. PPP conversion factor is a spatial price deflator and currency converter that eliminates the effects of the differences in price levels between countries.
+
+**Agricultura**: Agriculture corresponds to ISIC divisions 1-5 and includes forestry, hunting, and fishing, as well as cultivation of crops and livestock production. Value added is the net output of a sector after adding up all outputs and subtracting intermediate inputs. It is calculated without making deductions for depreciation of fabricated assets or depletion and degradation of natural resources. The origin of value added is determined by the International Standard Industrial Classification (ISIC), revision 3 or 4.
+
+**Indústria**:Industry corresponds to ISIC divisions 10-45 and includes manufacturing (ISIC divisions 15-37). It comprises value added in mining, manufacturing (also reported as a separate subgroup), construction, electricity, water, and gas. Value added is the net output of a sector after adding up all outputs and subtracting intermediate inputs. It is calculated without making deductions for depreciation of fabricated assets or depletion and degradation of natural resources. The origin of value added is determined by the International Standard Industrial Classification (ISIC), revision 3 or 4.
+
+**Indústria da Transformação**: Manufacturing refers to industries belonging to ISIC divisions 15-37. Value added is the net output of a sector after adding up all outputs and subtracting intermediate inputs. It is calculated without making deductions for depreciation of fabricated assets or depletion and degradation of natural resources. The origin of value added is determined by the International Standard Industrial Classification (ISIC), revision 3. Note: For VAB countries, gross value added at factor cost is used as the denominator.
+
+**Serviços**: Services correspond to ISIC divisions 50-99 and they include value added in wholesale and retail trade (including hotels and restaurants), transport, and government, financial, professional, and personal services such as education, health care, and real estate services. Also included are imputed bank service charges, import duties, and any statistical discrepancies noted by national compilers as well as discrepancies arising from rescaling. Value added is the net output of a sector after adding up all outputs and subtracting intermediate inputs. It is calculated without making deductions for depreciation of fabricated assets or depletion and degradation of natural resources. The industrial origin of value added is determined by the International Standard Industrial Classification (ISIC), revision 3 or 4.
+
+**Gastos do Governo**: General government final consumption expenditure (formerly general government consumption) includes all government current expenditures for purchases of goods and services (including compensation of employees). It also includes most expenditures on national defense and security, but excludes government military expenditures that are part of government capital formation.
+
+**Importações**: Imports of goods and services represent the value of all goods and other market services received from the rest of the world. They include the value of merchandise, freight, insurance, transport, travel, royalties, license fees, and other services, such as communication, construction, financial, information, business, personal, and government services. They exclude compensation of employees and investment income (formerly called factor services) and transfer payments.
+
+**Exportações**: Exports of goods and services represent the value of all goods and other market services provided to the rest of the world. They include the value of merchandise, freight, insurance, transport, travel, royalties, license fees, and other services, such as communication, construction, financial, information, business, personal, and government services. They exclude compensation of employees and investment income (formerly called factor services) and transfer payments.
+
+**Comércio**: Trade is the sum of exports and imports of goods and services measured as a share of gross domestic product.
+
+**Inflação**: Inflation as measured by the consumer price index reflects the annual percentage change in the cost to the average consumer of acquiring a basket of goods and services that may be fixed or changed at specified intervals, such as yearly. The Laspeyres formula is generally used. 
+
+**Desemprego**: Unemployment refers to the share of the labor force that is without work but available for and seeking employment. Definitions of labor force and unemployment differ by country
+
+**Formação Bruta de Capital Fixo**: Gross fixed capital formation (formerly gross domestic fixed investment) includes land improvements (fences, ditches, drains, and so on); plant, machinery, and equipment purchases; and the construction of roads, railways, and the like, including schools, offices, hospitals, private residential dwellings, and commercial and industrial buildings. According to the 1993 SNA, net acquisitions of valuables are also considered capital formation.
+
+**Poupança Interna**: Gross savings are calculated as gross national income less total consumption, plus net transfers.
+
+**Entrada de FDI**:Foreign direct investment are the net inflows of investment to acquire a lasting management interest (10 percent or more of voting stock) in an enterprise operating in an economy other than that of the investor. It is the sum of equity capital, reinvestment of earnings, other long-term capital, and short-term capital as shown in the balance of payments. This series shows net inflows (new investment inflows less disinvestment) in the reporting economy from foreign investors, and is divided by GDP.
+
+**Saída de FDI**: Foreign direct investment refers to direct investment equity flows in an economy. It is the sum of equity capital, reinvestment of earnings, and other capital. Direct investment is a category of cross-border investment associated with a resident in one economy having control or a significant degree of influence on the management of an enterprise that is resident in another economy. Ownership of 10 percent or more of the ordinary shares of voting stock is the criterion for determining the existence of a direct investment relationship. This series shows net outflows of investment from the reporting economy to the rest of the world, and is divided by GDP.
+
+**Saldo em Transações Correntes**: Current account balance is the sum of net exports of goods and services, net primary income, and net secondary income. 
+
+**Reservas (% do PIB)**: International reserves to total external debt stocks.
+
+**Proporção da Dívida Externa pela Renda Nacional**: Total external debt stocks to gross national income. Total external debt is debt owed to nonresidents repayable in currency, goods, or services. Total external debt is the sum of public, publicly guaranteed, and private nonguaranteed long-term debt, use of IMF credit, and short-term debt. Short-term debt includes all debt having an original maturity of one year or less and interest in arrears on long-term debt. GNI (formerly GNP) is the sum of value added by all resident producers plus any product taxes (less subsidies) not included in the valuation of output plus net receipts of primary income (compensation of employees and property income) from abroad.
+
+**Dívida do Governo**: Debt is the entire stock of direct government fixed-term contractual obligations to others outstanding on a particular date. It includes domestic and foreign liabilities such as currency and money deposits, securities other than shares, and loans. It is the gross amount of government liabilities reduced by the amount of equity and financial derivatives held by the government. Because debt is a stock rather than a flow, it is measured as of a given date, usually the last day of the fiscal year.
+
+**Dívida de Curto Prazo por Reservas**: Short-term debt includes all debt having an original maturity of one year or less and interest in arrears on long-term debt. Total reserves includes gold.
+
+**Serviço da Dívida (% das exportações e renda primária)**: Total debt service to exports of goods, services and primary income. Total debt service is the sum of principal repayments and interest actually paid in currency, goods, or services on long-term debt, interest paid on short-term debt, and repayments (repurchases and charges) to the IMF.
+
+

@@ -34,8 +34,10 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Language: en-US
-Remotes: 
+Remotes:  
     fernandobastosneto/barao,
-    fernandobastosneto/subsidios
+    fernandobastosneto/subsidios,
+    Thinkr-open/golem,
+    rstudio/shiny
 URL: https://github.com/fernandobastosneto/subsidios
 BugReports: https://github.com/fernandobastosneto/subsidios/issues

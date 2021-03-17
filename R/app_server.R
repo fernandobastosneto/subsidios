@@ -25,6 +25,21 @@ app_server <- function( input, output, session ) {
   )
   
   
+  output$report3 <- downloadHandler(
+    filename = function() {paste0(input$dataset3, " - Indicadores Econômicos - ", format(Sys.time(), '%B %Y'), ".pdf")},
+    content = function(file) {
+      filtro <- input$dataset3
+      
+      id <- showNotification("Rendering report...", duration = NULL, closeButton = FALSE)
+      on.exit(removeNotification(id), add = TRUE)
+      
+      arquivo <- relatorio_bancomundial(filtro)
+      file.copy(arquivo, file)
+    }
+  )
+  
+  
+  
 }
 
 
