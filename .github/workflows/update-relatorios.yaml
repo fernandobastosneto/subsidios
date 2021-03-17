@@ -21,6 +21,8 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           install.packages("remotes")
+          remotes::install_dev("shiny")
+          remotes::install_dev("golem")
           remotes::install_local(".")
         shell: Rscript {0}
         
