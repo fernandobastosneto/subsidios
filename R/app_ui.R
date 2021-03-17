@@ -8,7 +8,9 @@
 
 library(barao)
 
-# comtrade_files <- list.files(here("output", "Comtrade"))
+comtrade_files <- fs::dir_ls(here::here("data", "relatorios_comerciomundo")) %>% 
+  stringr::str_remove(paste0(here::here("data", "relatorios_comerciomundo/"), "comerciomundo_")) %>%
+  stringr::str_remove(".pdf$")
 mdic_files <- fs::dir_ls(here::here("data", "relatorios_comerciobr")) %>%
   stringr::str_remove(paste0(here::here("data", "relatorios_comerciobr/"), "comerciobr_")) %>%
   stringr::str_remove(".pdf$")
@@ -44,9 +46,9 @@ app_ui <- function(request) {
                  fluidRow(
                    column(2, wellPanel(selectInput("mdic", "Brasil-País", mdic_files), 
                                        downloadButton("mdic_report", "Download"), align = "left"))),
-                 # fluidRow(
-                 #   column(2, wellPanel(selectInput("comtrade", "País-Mundo", str_remove(comtrade_files, ".pdf")), 
-                 #                       downloadButton("comtrade_report", "Download"), align = "left")))
+                 fluidRow(
+                   column(2, wellPanel(selectInput("comtrade", "País-Mundo", str_remove(comtrade_files, ".pdf")),
+                                       downloadButton("comtrade_report", "Download"), align = "left")))
         ),
         tabPanel("Dados Econômicos",
                  fluidRow(
