@@ -12,7 +12,7 @@ lista_paises_filtrada <- lista_paises[! lista_paises %in% retirar_lista_paises]
 
 # purrr::walk(lista_paises_filtrada, barao::relatorio_brasil_pais)
 
-barao::relatorio_brasil_pais("Estados Unidos")
+barao::relatorio_brasil_pais("Chile")
 
 # walk(lista_paises_filtrada[133:235], barao::relatorio_brasil_pais)
 # 
