@@ -13,8 +13,13 @@ Imports:
     DT,
     glue,
     htmltools,
-    comerciobr (>= 0.1.0),
-    comerciomundo (>= 0.1.0),
+    here,
+    usethis,
+    rsconnect,
+    tinytex,
+    wbstats,
+    rmarkdown,
+    pkgload,
     barao (>= 0.1.0)
 Encoding: UTF-8
 LazyData: true
@@ -25,6 +30,6 @@ Suggests:
 Config/testthat/edition: 3
 Language: en-US
 Remotes:  
-    fernandobastosneto/comerciobr,
-    fernandobastosneto/comerciomundo,
     fernandobastosneto/barao
+URL: https://github.com/fernandobastosneto/subsidios
+BugReports: https://github.com/fernandobastosneto/subsidios/issues

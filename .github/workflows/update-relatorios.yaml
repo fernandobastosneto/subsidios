@@ -1,0 +1,72 @@
+on:
+  schedule:
+  - cron: "0 0 7 * *"
+  push:
+    branches:
+      - master
+
+name: update-relatorios
+
+jobs:
+  update-data:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        r-version: ['4.0.3']
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Instalar R ${{ matrix.r-version }}
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: ${{ matrix.r-version }}
+
+      - name: Cache R packages
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-shinydoc
+          restore-keys: |
+            ${{ runner.os }}-
+            
+      - name: Instalar dependencias
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          install.packages("remotes")
+          remotes::install_local(".")
+          remotes::install_cran("tidyverse")
+          remotes::install_cran("dplyr")
+          remotes::install_cran("usethis")
+          remotes::install_cran("vroom")
+          remotes::install_cran("httr")
+          remotes::install_cran("janitor")
+          remotes::install_cran("purrr")
+          remotes::install_cran("here")
+          remotes::install_cran("magrittr")
+          remotes::install_cran("fs")
+          remotes::install_cran("tibble")
+          remotes::install_cran("readxl")
+          remotes::install_cran("stringr")
+        shell: Rscript {0}
+        
+      - name: Execute Script
+        run: |
+          source('data-raw/relatorios.R')
+        shell: Rscript {0}
+
+      - name: Conectando ao ShinyApps
+        env:
+          SHINY_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINY_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+        run: |
+          shiny_token = Sys.getenv("SHINY_TOKEN")
+          shiny_secret = Sys.getenv("SHINY_SECRET")
+          rsconnect::setAccountInfo('fernandobastos', token = shiny_token, secret = shiny_secret)
+        shell: Rscript {0}
+
+      - name: Deploy to ShinyApps
+        run: |
+          rsconnect::deployApp(appTitle = "subsidios_teste", 
+          forceUpdate = getOption("rsconnect.force.update.apps", TRUE))
+        shell: Rscript {0}

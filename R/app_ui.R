@@ -4,13 +4,47 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
+#' 
+
+library(barao)
+
+# comtrade_files <- list.files(here("output", "Comtrade"))
+mdic_files <- fs::dir_ls(here::here("data", "relatorios_comerciobr")) %>%
+  stringr::str_remove(paste0(here::here("data", "relatorios_comerciobr/"), "comerciobr_")) %>%
+  stringr::str_remove("_\\d{4}_.*")
+
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic 
     fluidPage(
-      h1("subsidios")
+      tags$head(
+        tags$style(
+          HTML(".shiny-notification {
+             position:fixed;
+             top: calc(50%);
+             left: calc(30%);
+             }"
+          )
+        )
+      ),
+      h4("Subsídios Econômicos e Comerciais"),
+      tabsetPanel(
+        tabPanel("Dados Comerciais",
+                 fluidRow(
+                   column(2, wellPanel(selectInput("mdic", "Brasil-País", mdic_files), 
+                                       downloadButton("mdic_report", "Download"), align = "left"))),
+                 # fluidRow(
+                 #   column(2, wellPanel(selectInput("comtrade", "País-Mundo", str_remove(comtrade_files, ".pdf")), 
+                 #                       downloadButton("comtrade_report", "Download"), align = "left")))
+        )
+        # tabPanel("Dados Econômicos",
+        #          fluidRow(
+        #            column(2, wellPanel(selectInput("dataset3", "Escolha um país", paises$NO_PAIS),
+        #                                downloadButton("report3", "Download"), align = "left")))
+        # )
+      )
     )
   )
 }
