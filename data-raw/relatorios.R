@@ -13,7 +13,7 @@ lista_paises_filtrada <- lista_paises[! lista_paises %in% retirar_lista_paises]
 
 # barao::relatorio_brasil_pais("China")
 
-walk(lista_paises_filtrada, barao::relatorio_brasil_pais)
+purrr::walk(lista_paises_filtrada, barao::relatorio_brasil_pais)
 # 
 # # base de dados comtrade
 # 
