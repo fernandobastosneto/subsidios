@@ -47,7 +47,7 @@ app_ui <- function(request) {
                    column(2, wellPanel(selectInput("mdic", "Brasil-País", mdic_files), 
                                        downloadButton("mdic_report", "Download"), align = "left"))),
                  fluidRow(
-                   column(2, wellPanel(selectInput("comtrade", "País-Mundo", str_remove(comtrade_files, ".pdf")),
+                   column(2, wellPanel(selectInput("comtrade", "País-Mundo", stringr::str_remove(comtrade_files, ".pdf")),
                                        downloadButton("comtrade_report", "Download"), align = "left")))
         ),
         tabPanel("Dados Econômicos",
