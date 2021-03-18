@@ -44,6 +44,6 @@ jobs:
 
       - name: Deploy to ShinyApps
         run: |
-          rsconnect::deployApp(appTitle = "subsidios_teste", 
+          rsconnect::deployApp(appTitle = "subsidios", 
           forceUpdate = getOption("rsconnect.force.update.apps", TRUE))
         shell: Rscript {0}
