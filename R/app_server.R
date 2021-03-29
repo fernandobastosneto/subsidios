@@ -59,23 +59,3 @@ app_server <- function( input, output, session ) {
   
 }
 
-
-# remotes::install_cran("dplyr")
-# remotes::install_cran("usethis")
-# remotes::install_cran("janitor")
-# remotes::install_cran("purrr")
-# remotes::install_cran("here")
-# remotes::install_cran("magrittr")
-# remotes::install_cran("fs")
-# remotes::install_cran("tibble")
-# remotes::install_cran("readxl")
-# remotes::install_cran("stringr")
-# remotes::install_github("Thinkr-open/golem")
-# remotes::install_cran("shiny")
-# remotes::install_cran("rsconnect")
-# remotes::install_cran("tinytex")
-# remotes::install_cran("rmarkdown")
-# remotes::install_cran("glue")
-# remotes::install_cran("wbstats")
-# remotes::install_cran("pkgload")
-
