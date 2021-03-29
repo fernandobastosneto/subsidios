@@ -8,17 +8,22 @@ on:
 name: update-relatorios
 
 jobs:
-  update-data:
-    runs-on: macos-latest
+  build:
+    runs-on: macOS-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Instalar R
         uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Instalar dependencias
-        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           install.packages("remotes")
           remotes::install_local(".")
@@ -26,11 +31,10 @@ jobs:
           remotes::install_dev("golem")
           remotes::install_cran("tidyverse")
           tinytex::install_tinytex()
-        shell: Rscript {0}
+        
       - name: Execute Script
         run: |
           source('data-raw/relatorios.R')
-        shell: Rscript {0}
 
       - name: Conectando ao ShinyApps
         env:
