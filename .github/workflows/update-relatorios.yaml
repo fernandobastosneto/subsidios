@@ -18,13 +18,12 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Instalar dependencias
-        # if: steps.cache.outputs.cache-hit != 'true'
         run: |
           install.packages("remotes")
+          remotes::install_local(".")
           remotes::install_dev("shiny")
           remotes::install_cran("golem")
           remotes::install_cran("usethis")
-          remotes::install_local(".")
           remotes::install_cran("tidyverse")
           tinytex::install_tinytex()
         shell: Rscript {0}
