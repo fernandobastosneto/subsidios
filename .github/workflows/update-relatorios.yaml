@@ -23,6 +23,10 @@ jobs:
         uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-pandoc@v1
 
+      - name: Instalar libgit
+        run: |
+          brew install libgit2
+        
       - name: Instalar dependencias
         run: |
           install.packages("remotes")
