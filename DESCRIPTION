@@ -6,8 +6,8 @@ Description: Dados Econômicos e Comerciais.
 License: MIT + file LICENSE
 Imports: 
     config (>= 0.3.1),
-    golem (>= 0.3.0),
     shiny (>= 1.6.0.9000),
+    golem,
     glue,
     here,
     usethis,
@@ -38,7 +38,6 @@ Language: en-US
 Remotes: 
     fernandobastosneto/barao,
     fernandobastosneto/subsidios,
-    Thinkr-open/golem,
     rstudio/shiny
 URL: https://github.com/fernandobastosneto/subsidios
 BugReports: https://github.com/fernandobastosneto/subsidios/issues
