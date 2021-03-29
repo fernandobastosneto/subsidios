@@ -14,16 +14,17 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Instalar R
-        uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Instalar dependencias
-        if: steps.cache.outputs.cache-hit != 'true'
+        # if: steps.cache.outputs.cache-hit != 'true'
         run: |
           install.packages("remotes")
           remotes::install_dev("shiny")
-          remotes::install_local(".")
           remotes::install_cran("golem")
+          remotes::install_cran("usethis")
+          remotes::install_local(".")
           remotes::install_cran("tidyverse")
           tinytex::install_tinytex()
         shell: Rscript {0}
