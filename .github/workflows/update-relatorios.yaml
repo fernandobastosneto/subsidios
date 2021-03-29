@@ -23,6 +23,7 @@ jobs:
           install.packages("remotes")
           remotes::install_dev("shiny")
           remotes::install_local(".")
+          remotes::install_cran("golem")
           remotes::install_cran("tidyverse")
           tinytex::install_tinytex()
         shell: Rscript {0}
