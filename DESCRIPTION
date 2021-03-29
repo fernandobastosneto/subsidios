@@ -7,7 +7,6 @@ License: MIT + file LICENSE
 Imports: 
     config (>= 0.3.1),
     shiny (>= 1.6.0.9000),
-    golem,
     glue,
     here,
     usethis,
@@ -27,7 +26,8 @@ Imports:
     remotes,
     kableExtra,
     spelling,
-    lubridate
+    lubridate,
+    golem
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
