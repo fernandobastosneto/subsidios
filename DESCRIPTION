@@ -28,7 +28,8 @@ Imports:
     spelling,
     lubridate,
     golem,
-    gert
+    gert,
+    comerciobr (>= 0.1.0)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
@@ -36,9 +37,10 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Language: en-US
-Remotes: 
+Remotes:  
     fernandobastosneto/barao,
     fernandobastosneto/subsidios,
-    rstudio/shiny
+    rstudio/shiny,
+    fernandobastosneto/comerciobr
 URL: https://github.com/fernandobastosneto/subsidios
 BugReports: https://github.com/fernandobastosneto/subsidios/issues
